@@ -9,16 +9,17 @@ Multithreading::Multithreading() : m_waitingToWriteData(false)
 	{
 		while (true)
 		{
-			std::lock_guard<std::mutex> guard(m_pathFindingData);
-			//m_pathFindingData.lock();
+			//std::lock_guard<std::mutex> guard(m_pathFindingData);
+			m_pathFindingData.lock();
 			m_pathfinding.Execute();
-			//m_pathFindingData.unlock();
+			m_pathFindingData.unlock();
 		}
 	});
 
 	//Spawns our new thread in our constructor and use the lambda which will 
 	//loop endlessly and executes our graphics function
-	m_renderThread = std::thread([&] {
+	m_renderThread = std::thread([&] 
+	{
 		while (true)
 		{
 			if (!m_waitingToWriteData)
@@ -42,6 +43,7 @@ void Multithreading::Tick()
 	m_input.Execute();
 	m_gameLogic.Execute();
 	m_physics.Execute();
+	//m_pathfinding.Execute();
 
 	m_waitingToWriteData = true;
 	m_renderDataMutex.lock();
